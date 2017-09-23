@@ -61,40 +61,41 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 ####1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
-
-Here is an example of a traffic sign image before and after grayscaling.
-
-![alt text][image2]
-
-As a last step, I normalized the image data because ...
-
-I decided to generate additional data because ... 
-
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
-
+I didn't preprocess all the data ahead of time. I included preprocessing as part of the network itself. This would increase the compute but just seemed simpler. The preprocessing steps I took the image converted to both hsv and grascale images. I then concatenated them so that the number of channels is now 4. While I don't have a strong justification for this, it just seemed to make sense. Also, in order to augment the dataset with images, I added noise gaussian(mean=0.0,std=0.05) noise to 30% of input in everybatch.
 
 ####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 My final model consisted of the following layers:
 
+
+
 | Layer         		|     Description	        					| 
 |:---------------------:|:---------------------------------------------:| 
 | Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
+|concatenate hsv and grayscale images | outputs 32x32x4 |
+| apply per image standardization | no change in output-shape |
+| Convolution 5x5 | 1x1 stride, same padding, outputs 32x32x6 |
+| RELU | |
+| Convolution 5x5 | 1x1 stride, valid padding, output 28x28x6 |
+| RELU | |
+| max pooling | 2x2 stride | output 14x14x6 |
+| Convolution 5x5 | 1x1 stride, valid padding, output 10x10x16 |
+| RELU | |
+| max pooling | 2x2 stride | output 5x5x16 |
+| Flatten |  | input:5x5x16 output 400 |
+| Fully connected |  input:400 output:120 |
+| RELU | |
+| Fully connected |  input:120 output:120 |
+| RELU | |
+| Dropout | keep_prob : 0.5(training) 1.0(evaluation) | 
+| Fully connected | input:120 output:84 |
+| RELU | |
+| Dropout | keep_prob : 0.5(training) 1.0(evaluation) |
+| Fully connected | input:84 output:43 |
+| RELU | |
+| Dropout | keep_prob : 0.5(training) 1.0(evaluation) |
+| Fully connected | input:43 output 43 |
+| Softmax				|        									|
  
 
 
